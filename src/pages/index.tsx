@@ -7,35 +7,37 @@ type TStaticInfo = {
 
 const Channel = "bc";
 
-function Home( ) {
+function Home() {
+  const [s, setS] = React.useState(true);
   const [m, setM] = React.useState<Date>(new Date());
   const bc = React.useRef<BroadcastChannel | null>(null);
 
   const handleBc = () => {
-
-
     // console.log('clicking', bc === bc)
+    setS((prev) => !prev);
 
     setInterval(() => {
-          bc.current!.postMessage(new Date());
-    }, 200)
+      s && bc.current!.postMessage(new Date());
+    }, 200);
   };
 
   React.useEffect(() => {
     bc.current = new BroadcastChannel(Channel);
-    handleBc()
+    handleBc();
   }, []);
 
   React.useEffect(() => {
     bc.current?.addEventListener("message", (data) => {
-      console.log(data.data)
+      console.log(data.data);
       setM(data.data);
     });
   }, [bc]);
 
   return (
     <>
-      <h1>--[{m?.getHours()}:{m?.getMinutes()}:{m?.getSeconds()}]--</h1>
+      <h1>
+        --[{m?.getHours()}:{m?.getMinutes()}:{m?.getSeconds()}]--
+      </h1>
       <button type="button" onClick={handleBc}>
         Start Messaging
       </button>
